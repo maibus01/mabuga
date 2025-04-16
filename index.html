@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MABUGA EFOOTBALL LEAGUE</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: lightblue;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    nav {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    nav a {
+      margin: 0 10px;
+      padding: 10px 15px;
+      text-decoration: none;
+      font-weight: bold;
+      color: white;
+      background-color: pink;
+      border-radius: 20px;
+      display: inline-block;
+      transition: background 0.3s;
+    }
+    nav a:hover {
+      background-color: hotpink;
+    }
+    .admin-auth {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .admin-auth input {
+      padding: 8px;
+      font-size: 1rem;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      width: 200px;
+    }
+    .admin-auth button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      color: white;
+      background-color: pink;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 10px;
+    }
+    .admin-auth button:hover {
+      background-color: hotpink;
+    }
+    form {
+      display: none;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    input, button {
+      padding: 8px;
+      font-size: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #eee;
+    }
+    tr {
+      background-color: #cce5ff;
+    }
+    tr:hover {
+      background-color: #b3d7ff;
+    }
+  </style>
+</head>
+<body>
+  <h1>MABUGA EFOOTBALL LEAGUE</h1>
+  <nav>
+    <a href="#">Table</a>
+  </nav>
+
+  <div class="admin-auth">
+    <input type="password" id="adminPassword" placeholder="Enter Admin Password" />
+    <button onclick="checkPassword()">Login</button>
+  </div>
+
+  <form id="matchForm">
+    <input type="text" id="teamA" placeholder="Team A" required />
+    <input type="number" id="scoreA" placeholder="Score A" required />
+    <input type="number" id="scoreB" placeholder="Score B" required />
+    <input type="text" id="teamB" placeholder="Team B" required />
+    <button type="submit">Add Result</button>
+  </form>
+
+  <table id="leagueTable">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Team</th>
+        <th>P</th>
+        <th>W</th>
+        <th>D</th>
+        <th>L</th>
+        <th>Pts</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const PASSWORD = "1234567890A";
+    const form = document.getElementById('matchForm');
+    const tableBody = document.querySelector('#leagueTable tbody');
+    const adminInput = document.getElementById('adminPassword');
+
+    function checkPassword() {
+      if (adminInput.value === PASSWORD) {
+        form.style.display = 'flex';
+        adminInput.style.display = 'none';
+        adminInput.nextElementSibling.style.display = 'none';
+      } else {
+        alert('Incorrect password');
+      }
+    }
+
+    const teams = {
+      'USM': { played: 0, won: 0, drawn: 0, lost: 0, points: 0 },
+      'NASLA': { played: 0, won: 0, drawn: 0, lost: 0, points: 0 },
+      'V202020': { played: 0, won: 0, drawn: 0, lost: 0, points: 0 },
+      'MUKKTY': { played: 0, won: 0, drawn: 0, lost: 0, points: 0 },
+      'USMANA': { played: 0, won: 0, drawn: 0, lost: 0, points: 0 },
+      'SAIFULLAHI': { played: 0, won: 0, drawn: 0, lost: 0, points: 0 },
+      'ABBACITY': { played: 0, won: 0, drawn: 0, lost: 0, points: 0 },
+      'YMY FX': { played: 0, won: 0, drawn: 0, lost: 0, points: 0 },
+      'MAIBUS': { played: 0, won: 0, drawn: 0, lost: 0, points: 0 },
+      'AMINU': { played: 0, won: 0, drawn: 0, lost: 0, points: 0 }
+    };
+
+    function updateTable() {
+      const sorted = Object.entries(teams)
+        .map(([name, stats]) => ({ name, ...stats }))
+        .sort((a, b) => b.points - a.points);
+
+      tableBody.innerHTML = '';
+      sorted.forEach((team, index) => {
+        const row = `<tr>
+          <td>${index + 1}</td>
+          <td>${team.name}</td>
+          <td>${team.played}</td>
+          <td>${team.won}</td>
+          <td>${team.drawn}</td>
+          <td>${team.lost}</td>
+          <td>${team.points}</td>
+        </tr>`;
+        tableBody.innerHTML += row;
+      });
+
+      localStorage.setItem('teams', JSON.stringify(teams)); // Store initial reset too
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const teamA = document.getElementById('teamA').value.trim();
+      const scoreA = parseInt(document.getElementById('scoreA').value);
+      const scoreB = parseInt(document.getElementById('scoreB').value);
+      const teamB = document.getElementById('teamB').value.trim();
+
+      [teamA, teamB].forEach(team => {
+        if (!teams[team]) {
+          teams[team] = { played: 0, won: 0, drawn: 0, lost: 0, points: 0 };
+        }
+      });
+
+      teams[teamA].played++;
+      teams[teamB].played++;
+
+      if (scoreA > scoreB) {
+        teams[teamA].won++;
+        teams[teamA].points += 3;
+        teams[teamB].lost++;
+      } else if (scoreA < scoreB) {
+        teams[teamB].won++;
+        teams[teamB].points += 3;
+        teams[teamA].lost++;
+      } else {
+        teams[teamA].drawn++;
+        teams[teamB].drawn++;
+        teams[teamA].points++;
+        teams[teamB].points++;
+      }
+
+      localStorage.setItem('teams', JSON.stringify(teams));
+      updateTable();
+      form.reset();
+    });
+
+    updateTable();
+  </script>
+</body>
+</html>
